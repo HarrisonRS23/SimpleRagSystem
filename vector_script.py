@@ -2,6 +2,19 @@
 # then store the chunk and its corresponding vector in a list.
 # example for calculate the embedding vector for a given text:
 
+"""
+limitations
+    1.) Chunks are ranked based on similiarity to the query but
+    if there are multiple topics at the same time this breaks down.
+    2.) Top n results based on cosine similiarity but may be better 
+    to use a re-ranking model to re-rank the retrieved chunks based on relevance
+    3.) database stored local which may not be scalable for large datasets
+        - better to use something like pinecone, qdrant, pgvector 
+    4.) Each sentance is a chunk, may need more sophisticated techniques 
+        to break down dataset into smaller chunks. also could pre-process chunkns
+    5.) limited llm model used
+
+"""
 import ollama
 
 # ollama models 
