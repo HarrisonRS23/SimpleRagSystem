@@ -21,12 +21,6 @@ import ollama
 EMBEDDING_MODEL = 'hf.co/CompendiumLabs/bge-base-en-v1.5-gguf'
 LANGUAGE_MODEL = 'hf.co/bartowski/Llama-3.2-1B-Instruct-GGUF'
 
-# Load the dataset
-
-dataset = []
-with open('cat.txt', 'r') as file:
-  dataset = file.readlines()
-  print(f'Loaded {len(dataset)} entries')
 
 # Implement Vector Database  ***********
 
@@ -34,16 +28,16 @@ with open('cat.txt', 'r') as file:
 # The embedding is a list of floats, for example: [0.1, 0.04, -0.34, 0.21, ...]
 VECTOR_DB = []
 
+# Create dataset
+dataset = []
+
+
 # Each line is a chunk for simplicity
 # add each chunk to the "database" using embedding model 
 # vector_db is a list of chunks represented as vectors 
 def add_chunk_to_database(chunk):
   embedding = ollama.embed(model=EMBEDDING_MODEL, input=chunk)['embeddings'][0]
   VECTOR_DB.append((chunk, embedding))
-
-for i, chunk in enumerate(dataset):
-    add_chunk_to_database(chunk)
-print(f'Added chunk {i+1}/{len(dataset)} to the database')
 
 
 # Retrieval functions ***************
@@ -74,29 +68,53 @@ def retrieve(query, top_n=3):
 
 # Chatbot 
 
-input_query = input('Ask me a question: ')
-retrieved_knowledge = retrieve(input_query)
+def get_response():
+  input_query = input('Ask me a question: ')
+  retrieved_knowledge = retrieve(input_query)
 
-print('Retrieved knowledge:')
-for chunk, similarity in retrieved_knowledge:
-  print(f' - (similarity: {similarity:.2f}) {chunk}')
+  print('Retrieved knowledge:')
+  for chunk, similarity in retrieved_knowledge:
+    print(f' - (similarity: {similarity:.2f}) {chunk}')
 
-instruction_prompt = f'''You are a helpful chatbot.
-Use only the following pieces of context to answer the question. Don't make up any new information:
-{'\n'.join([f' - {chunk}' for chunk, similarity in retrieved_knowledge])}
-'''
-#print(instruction_prompt)
+  instruction_prompt = f'''You are a helpful chatbot.
+  Use only the following pieces of context to answer the question. Don't make up any new information:
+  {'\n'.join([f' - {chunk}' for chunk, similarity in retrieved_knowledge])}
+  '''
+  #print(instruction_prompt)
 
-stream = ollama.chat(
-  model=LANGUAGE_MODEL,
-  messages=[
-    {'role': 'system', 'content': instruction_prompt},
-    {'role': 'user', 'content': input_query},
-  ],
-  stream=True,
-)
+  stream = ollama.chat(
+    model=LANGUAGE_MODEL,
+    messages=[
+      {'role': 'system', 'content': instruction_prompt},
+      {'role': 'user', 'content': input_query},
+    ],
+    stream=True,
+  )
 
-# print the response from the chatbot in real-time
-print('Chatbot response:')
-for chunk in stream:
-  print(chunk['message']['content'], end='', flush=True)
+  # print the response from the chatbot in real-time
+  print('Chatbot response:')
+  for chunk in stream:
+    print(chunk['message']['content'], end='', flush=True)
+
+
+def main():
+  # Load the dataset
+ 
+  with open('cat.txt', 'r') as file:
+    dataset = file.readlines()
+    print(f'Loaded {len(dataset)} entries')
+
+
+  for i, chunk in enumerate(dataset):
+    add_chunk_to_database(chunk)
+  print(f'Added chunk {i+1}/{len(dataset)} to the database')
+
+  # Get chatbot response
+  # print
+  get_response()
+
+if __name__ == "__main__":
+  main()
+
+
+  
