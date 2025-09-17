@@ -2,7 +2,9 @@
 
 # Local Chatbot Web App
 
-A simple local web application that integrates a Python chatbot script with a Flask backend and a minimal HTML/JavaScript frontend. The app runs locally in your browser and allows you to interact with a chatbot.
+A simple local web application that integrates a Python chatbot script with a Flask backend and a minimal HTML/JavaScript frontend. The app runs locally in your browser and allows you to interact with a chatbot. 
+
+The Context is a simple 150 line document about cats. The Chatbot will use this as the context for the chat queries. Questions not about cats or information not included may result in unexpected responses. 
 
 ---
 
