@@ -68,8 +68,7 @@ def retrieve(query, top_n=3):
 
 # Chatbot 
 
-def get_response():
-  input_query = input('Ask me a question: ')
+def get_response(input_query):
   retrieved_knowledge = retrieve(input_query)
 
   print('Retrieved knowledge:')
@@ -93,28 +92,25 @@ def get_response():
 
   # print the response from the chatbot in real-time
   print('Chatbot response:')
+  response = ""
   for chunk in stream:
     print(chunk['message']['content'], end='', flush=True)
+    response += chunk['message']['content']
+  return response
 
 
-def main():
-  # Load the dataset
+# Load the dataset
  
-  with open('cat.txt', 'r') as file:
-    dataset = file.readlines()
-    print(f'Loaded {len(dataset)} entries')
+with open('cat.txt', 'r') as file:
+  dataset = file.readlines()
+  print(f'Loaded {len(dataset)} entries')
 
 
-  for i, chunk in enumerate(dataset):
-    add_chunk_to_database(chunk)
-  print(f'Added chunk {i+1}/{len(dataset)} to the database')
+for i, chunk in enumerate(dataset):
+  add_chunk_to_database(chunk)
+print(f'Added chunk {i+1}/{len(dataset)} to the database')
 
-  # Get chatbot response
-  # print
-  get_response()
 
-if __name__ == "__main__":
-  main()
 
 
   
